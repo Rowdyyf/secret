@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>will you be my Valentine? · rowdy heart</title>
+    <!-- Font Awesome 6 (free) for hearts & icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Font: soft & friendly on mobile -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* MOBILE FIRST / RESPONSIVE RESET */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; /* remove grey tap on mobile */
+        }
+        body {
+            background: linear-gradient(145deg, #ffdde1 0%, #f9c9d1 100%);
+            font-family: 'Quicksand', sans-serif;
+            height: 100vh;
+            width: 100vw;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            touch-action: pan-y; /* vertical scroll allowed but no zoom */
+        }
+        /* floating heart balloons – moving gracefully */
+        .heart-balloon {
+            position: absolute;
+            color: rgba(255, 80, 120, 0.65);
+            font-size: 2.2rem;
+            user-select: none;
+            pointer-events: none;
+            z-index: 1;
+            text-shadow: 0 0 8px rgba(255, 220, 240, 0.9);
+            animation: floatAround 20s infinite alternate ease-in-out;
+            will-change: transform;
+        }
+        @keyframes floatAround {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(10px, -18px) rotate(6deg); }
+            50% { transform: translate(-12px, -28px) rotate(-5deg); }
+            75% { transform: translate(16px, -12px) rotate(8deg); }
+            100% { transform: translate(-14px, -20px) rotate(-4deg); }
+        }
+        /* main card – soft glass, perfectly fits mobile */
+        .valentine-box {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-radius: 48px 48px 32px 32px;
+            padding: 2rem 1.8rem;
+            box-shadow: 0 18px 35px rgba(200, 70, 100, 0.25);
+            border: 2px solid rgba(255, 230, 240, 0.95);
+            text-align: center;
+            z-index: 30;
+            max-width: 550px;
+            width: 100%;
+            margin: auto;
+            transition: all 0.2s;
+            border: 3px solid #ffe7ed;
+        }
+        h1 {
+            font-size: clamp(2rem, 8vw, 2.8rem);
+            font-weight: 700;
+            color: #a1334b;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-shadow: 2px 2px 0 rgba(255, 215, 220, 0.7);
+            flex-wrap: wrap;
+        }
+        h1 i {
+            font-size: 1.2em;
+            color: #e63950;
+            filter: drop-shadow(2px 6px 8px rgba(200, 60, 80, 0.2));
+        }
+        .question {
+            font-size: clamp(1.4rem, 5.5vw, 1.9rem);
+            font-weight: 600;
+            color: #4f2d3f;
+            background: rgba(255, 245, 240, 0.8);
+            padding: 0.7rem 1.2rem;
+            border-radius: 60px;
+            display: inline-block;
+            margin: 0.8rem 0 1.6rem 0;
+            backdrop-filter: blur(4px);
+            border: 1px dashed #ff90a5;
+            box-shadow: 0 4px 12px #ffb6c180;
+            width: 100%;
+            word-break: break-word;
+        }
+        /* button container — relative for absolute fleeing no button */
+        .button-pair {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 130px;
+            width: 100%;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            touch-action: pan-y; /* allow vertical scroll while playing */
+        }
+        .btn {
+            font-family: 'Quicksand', sans-serif;
+            font-size: clamp(1.6rem, 6vw, 2rem);
+            font-weight: 700;
+            padding: 0.9rem 1.8rem;
+            border: none;
+            border-radius: 120px;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 0 rgba(0, 0, 0, 0.08), 0 10px 25px rgba(190, 50, 80, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            border: 2px solid white;
+            transition: all 0.1s;
+            white-space: nowrap;
+        }
+        /* YES button – stays, lovable */
+        .btn-yes {
+            background: #ff4d6d;
+            color: white;
+            text-shadow: 0 2px 0 #a11f33;
+            position: relative;
+            z-index: 35;
+            margin-right: 10px;
+            flex-shrink: 1;
+            white-space: nowrap;
+        }
+        /* NO button – absolute & ready to flee */
+        .btn-no {
+            background: #6b4e5a;
+            color: #ffe9ec;
+            text-shadow: 0 2px 0 #38242a;
+            box-shadow: 0 10px 0 #3b2b30, 0 10px 25px #5a3e48;
+            position: absolute;
+            left: 60%; /* initial spot, will be overridden by js */
+            top: 10px;
+            z-index: 40;
+            white-space: nowrap;
+            transition: transform 0.08s, left 0.08s, top 0.08s, opacity 0.2s;
+            will-change: left, top, transform;
+            touch-action: none; /* prevent scrolling while touching no */
+        }
+        .btn-no i {
+            color: #ffccd6;
+        }
+        .btn-yes i {
+            color: #ffeab3;
+        }
+        /* hidden sweet message – appears after YES */
+        .hidden-message {
+            display: none;
+            margin-top: 2rem;
+            background: rgba(255, 240, 245, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 1.6rem 1.4rem;
+            border-radius: 60px 20px 60px 20px;
+            color: #611f2c;
+            border: 4px solid #ffa5b9;
+            box-shadow: 0 12px 30px #ff99aa80;
+            animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            width: 100%;
+        }
+        .hidden-message p {
+            font-size: clamp(1.1rem, 4vw, 1.4rem);
+            line-height: 1.5;
+            font-weight: 600;
+            margin-bottom: 0.9rem;
+            word-break: break-word;
+        }
+        .hidden-message i {
+            color: #e63946;
+            margin: 0 5px;
+        }
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.7); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .signature {
+            margin-top: 1.4rem;
+            color: #904b59;
+            font-weight: 600;
+            font-size: clamp(0.95rem, 3.8vw, 1.15rem);
+            opacity: 0.9;
+        }
+        /* extra mobile snug */
+        @media (max-width: 450px) {
+            .valentine-box {
+                padding: 1.5rem 1.2rem;
+                border-radius: 40px;
+            }
+            .btn {
+                padding: 0.8rem 1.2rem;
+                gap: 5px;
+            }
+            .btn-no {
+                left: 58%; /* adjusted by js anyway */
+            }
+        }
+        /* landscape mode adjustments */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body { padding: 8px; align-items: flex-start; }
+            .valentine-box { margin: 10px auto; padding: 1.2rem; }
+            .heart-balloon { opacity: 0.4; }
+        }
+        .btn-yes:active { transform: scale(0.97); background: #ff3355; }
+    </style>
+</head>
+<body>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!--   FLOATING HEART BALLOONS (quantity perfect for mobile) -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<script>
+    (function createHeartBalloons() {
+        // 24 balloons – enough for richness, not too heavy
+        for (let i = 0; i < 24; i++) {
+            let balloon = document.createElement('i');
+            // mix solid + regular hearts
+            let isSolid = i % 3 !== 0;
+            balloon.className = isSolid ? 'fas fa-heart heart-balloon' : 'far fa-heart heart-balloon';
+            let size = Math.floor(Math.random() * 42 + 24); // 24–66px
+            let left = Math.random() * 100;
+            let top = Math.random() * 100;
+            let duration = Math.random() * 15 + 14; // 14–29s
+            let delay = Math.random() * 10;
+            let opacity = Math.random() * 0.45 + 0.35;
+            // soft pink/red palette
+            let hue = [340, 345, 350, 355, 360, 332][Math.floor(Math.random() * 6)];
+            let sat = Math.floor(Math.random() * 25 + 60); // 60–85%
+            let light = Math.floor(Math.random() * 18 + 70); // 70–88%
+            balloon.style.left = left + '%';
+            balloon.style.top = top + '%';
+            balloon.style.fontSize = size + 'px';
+            balloon.style.animation = `floatAround ${duration}s infinite alternate ease-in-out`;
+            balloon.style.animationDelay = delay + 's';
+            balloon.style.color = `hsl(${hue}, ${sat}%, ${light}%)`;
+            balloon.style.opacity = opacity;
+            document.body.appendChild(balloon);
+        }
+    })();
+</script>
+
+<!-- MAIN VALENTINE CARD (mobile friendly) -->
+<div class="valentine-box" style="z-index: 30; position: relative;">
+    <h1>
+        <i class="fas fa-heart" style="color: #ff4d6d;"></i> 
+        V-Day?
+        <i class="fas fa-heart" style="color: #ff8c9a;"></i>
+    </h1>
+    <div class="question">
+        will you be my Valentine? 🥺💗
+    </div>
+
+    <!-- BUTTON ZONE – YES & FLEEING NO -->
+    <div id="buttonContainer" class="button-pair">
+        <!-- YES button – always there, never runs -->
+        <button id="yesBtn" class="btn btn-yes">
+            <i class="fas fa-check-circle"></i> YES 
+            <i class="fas fa-heart" style="font-size: 1.5rem;"></i>
+        </button>
+
+        <!-- NO button – will run away on touch/hover -->
+        <button id="noBtn" class="btn btn-no">
+            <i class="fas fa-times-circle"></i> NO 
+            <i class="fas fa-heart-broken" style="font-size: 1.3rem;"></i>
+        </button>
+    </div>
+
+    <!-- SECRET MESSAGE (appears after YES clicked) -->
+    <div id="loveMessage" class="hidden-message">
+        <i class="fas fa-heart-circle-check" style="font-size: 2.5rem; margin-bottom: 0.5rem;"></i>
+        <p style="font-weight: 700; font-size: 1.9rem; margin-bottom: 0.2rem;">Knew it. 😏</p>
+        <p>You can’t hide that soft heart behind all that rowdy energy. I was 99.9% sure you’d say yes… but seeing it anyway made me melt. 🥹 Don’t act surprised now, okay? You just unlocked Valentine status, good job. 🎉</p>
+        <p>Also… you’re officially stuck with me. Forever sounds good? 🔐❤️ And just so you know… my heart was cheering the whole time. Always yours, little rowdy.</p>
+        <i class="fas fa-heart" style="font-size: 2rem; color: #db3a4b;"></i>
+        <i class="fas fa-heart" style="font-size: 1.8rem; color: #ff7083;"></i>
+        <i class="fas fa-heart" style="font-size: 1.6rem; color: #ffb3b3;"></i>
+    </div>
+
+    <div class="signature">
+        <i class="fas fa-heart" style="color: #e63946;"></i> xoxo, your permanent headache <i class="fas fa-heart" style="color: #e63946;"></i>
+    </div>
+</div>
+
+<script>
+    (function mobileFriendlyValentine() {
+        "use strict";
+
+        // ----------  DOM elements ----------
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const loveMsg = document.getElementById('loveMessage');
+        const container = document.getElementById('buttonContainer');
+        
+        // state: if YES clicked, stop everything
+        let isAnswered = false;
+
+        // ----------  set absolute positioning for NO button ----------
+        function initNoPosition() {
+            if (!noBtn || !container) return;
+            container.style.position = 'relative';
+            noBtn.style.position = 'absolute';
+            // initial position: 60% from left, 10px top (safe within container)
+            noBtn.style.left = '60%';
+            noBtn.style.top = '12px';
+            noBtn.style.transform = 'rotate(0deg)';
+        }
+        window.addEventListener('load', initNoPosition);
+        // also call right now in case load already happened
+        initNoPosition();
+
+        // ----------  FLEE FUNCTION: moves NO button far away (mobile optimized) ----------
+        function moveNoButton() {
+            if (isAnswered) return;
+            if (!noBtn || !container) return;
+            
+            // ensure absolute positioning
+            if (noBtn.style.position !== 'absolute') {
+                noBtn.style.position = 'absolute';
+            }
+            
+            // get container & button dimensions
+            const containerRect = container.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+            
+            // current left/top (parse from % or px, fallback)
+            let currentLeft = parseFloat(noBtn.style.left);
+            let currentTop = parseFloat(noBtn.style.top);
+            if (isNaN(currentLeft)) currentLeft = containerRect.width * 0.6;
+            if (isNaN(currentTop)) currentTop = 12;
+            
+            // big random jump – ensures it's hard to catch on mobile
+            let deltaX = (Math.random() * 200) - 100; // -100 to +100
+            let deltaY = (Math.random() * 160) - 70;  // -70 to +90
+            
+            let newLeft = currentLeft + deltaX;
+            let newTop = currentTop + deltaY;
+            
+            // clamp inside container with padding (keep fully inside)
+            const maxLeft = containerRect.width - btnRect.width - 8;
+            const maxTop = containerRect.height - btnRect.height - 8;
+            newLeft = Math.min(Math.max(newLeft, 5), maxLeft);
+            newTop = Math.min(Math.max(newTop, 5), maxTop);
+            
+            noBtn.style.left = newLeft + 'px';
+            noBtn.style.top = newTop + 'px';
+            
+            // add slight random rotation – mischievous
+            noBtn.style.transform = `rotate(${Math.random() * 12 - 6}deg)`;
+        }
+
+        // ----------  TRIGGER FLEE: on touch, mouse, click, any approach ----------
+        function fleeHandler(e) {
+            if (isAnswered) return;
+            // prevent default to avoid zoom or scroll when trying to catch NO
+            e.preventDefault(); 
+            e.stopPropagation(); // important for touch
+            moveNoButton();
+        }
+
+        // ----------  attach fleeing events for MOBILE + DESKTOP ----------
+        // touch start: flee immediately (finger trying to tap)
+        noBtn.addEventListener('touchstart', fleeHandler, { passive: false });
+        // mouse enter: flee (desktop)
+        noBtn.addEventListener('mouseenter', fleeHandler);
+        // click attempt: flee hard (and don't count as click)
+        noBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (isAnswered) return;
+            moveNoButton();
+        });
+        // also mousemove near button -> flee (global for sensitivity)
+        function globalFleeCheck(e) {
+            if (isAnswered) return;
+            if (!noBtn) return;
+            const btnRect = noBtn.getBoundingClientRect();
+            const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+            
+            const btnCenterX = btnRect.left + btnRect.width/2;
+            const btnCenterY = btnRect.top + btnRect.height/2;
+            const dist = Math.hypot(clientX - btnCenterX, clientY - btnCenterY);
+            
+            // if finger/mouse within 150px -> flee (annoying but cute)
+            if (dist < 150) {
+                moveNoButton();
+            }
+        }
+        document.addEventListener('mousemove', globalFleeCheck);
+        document.addEventListener('touchmove', function(e) {
+            if (e.touches.length) globalFleeCheck(e);
+        }, { passive: false });
+
+        // ----------  YES BUTTON : reveal message, disable NO, celebrate ----------
+        yesBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (isAnswered) return;
+            
+            isAnswered = true; // stop fleeing
+            
+            // show the secret message
+            loveMsg.style.display = 'block';
+            
+            // gracefully vanish NO button
+            noBtn.style.transition = 'opacity 0.25s, visibility 0.25s';
+            noBtn.style.opacity = '0';
+            noBtn.style.visibility = 'hidden';
+            
+            // remove all flee listeners to save resources
+            noBtn.removeEventListener('touchstart', fleeHandler);
+            noBtn.removeEventListener('mouseenter', fleeHandler);
+            document.removeEventListener('mousemove', globalFleeCheck);
+            document.removeEventListener('touchmove', globalFleeCheck);
+            
+            // burst of hearts (makes mobile happy)
+            for (let i = 0; i < 12; i++) {
+                setTimeout(() => {
+                    let heart = document.createElement('i');
+                    heart.className = 'fas fa-heart';
+                    heart.style.position = 'absolute';
+                    heart.style.left = e.clientX + (Math.random() * 200 - 100) + 'px';
+                    heart.style.top = e.clientY + (Math.random() * 200 - 100) + 'px';
+                    heart.style.fontSize = (Math.floor(Math.random() * 40) + 24) + 'px';
+                    heart.style.color = `hsl(${Math.floor(Math.random() * 20 + 340)}, 80%, 70%)`;
+                    heart.style.zIndex = '999';
+                    heart.style.pointerEvents = 'none';
+                    heart.style.animation = 'popIn 0.8s forwards';
+                    document.body.appendChild(heart);
+                    setTimeout(() => heart.remove(), 900);
+                }, i * 20);
+            }
+        });
+
+        // ----------  mobile: prevent accidental page zoom when double-tapping no ----------
+        noBtn.addEventListener('touchstart', (e) => {
+            if (e.cancelable) e.preventDefault();
+        }, { passive: false });
+
+        // ----------  reposition no if container resizes (orientation change) ----------
+        window.addEventListener('resize', function() {
+            if (!isAnswered && noBtn) {
+                // keep inside new dimensions
+                let containerRect = container?.getBoundingClientRect();
+                if (containerRect && noBtn) {
+                    let btnRect = noBtn.getBoundingClientRect();
+                    let left = parseFloat(noBtn.style.left);
+                    let top = parseFloat(noBtn.style.top);
+                    if (!isNaN(left) && !isNaN(top)) {
+                        left = Math.min(left, containerRect.width - btnRect.width - 5);
+                        top = Math.min(top, containerRect.height - btnRect.height - 5);
+                        left = Math.max(left, 5);
+                        top = Math.max(top, 5);
+                        noBtn.style.left = left + 'px';
+                        noBtn.style.top = top + 'px';
+                    }
+                }
+            }
+        });
+    })();
+</script>
+
+<!-- extra few heart balloons after load for richness (mobile perf fine) -->
+<script>
+    (function addExtraShinyHearts() {
+        for (let i=0;i<6;i++) {
+            let b = document.createElement('i');
+            b.className = 'fas fa-heart heart-balloon';
+            b.style.left = Math.random()*90 + '%';
+            b.style.top = Math.random()*90 + '%';
+            b.style.fontSize = (Math.floor(Math.random()*50)+30)+'px';
+            b.style.animation = `floatAround ${Math.random()*16+18}s infinite alternate`;
+            b.style.animationDelay = Math.random()*7+'s';
+            b.style.color = `hsl(${Math.floor(Math.random()*20+335)}, 70%, 75%)`;
+            b.style.opacity = 0.55;
+            document.body.appendChild(b);
+        }
+    })();
+</script>
+
+<!-- ensure hidden message is beautiful on mobile -->
+<style>
+    .hidden-message p { word-break: break-word; }
+    .btn-no { touch-action: pan-y; } /* allow minimal scroll but flee works */
+    .btn-yes { touch-action: manipulation; } /* no zoom on double tap */
+    /* ensure no button stays clickable but runs */
+    .button-pair { touch-action: pan-y; }
+</style>
+
+</body>
+</html>
